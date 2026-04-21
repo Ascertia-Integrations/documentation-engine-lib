@@ -36,6 +36,7 @@ A consumer (product) documentation repository should implement:
   ```ini
   @ascertia-integrations:registry=https://npm.pkg.github.com
   ```
+- **CI secret**: set `DOCS_PLATFORM_NPM_TOKEN` (a PAT with `read:packages`) in the consumer repo (or org), and pass it to the reusable workflow (for example via `secrets: inherit`).
 - **Docusaurus navbar** includes the version dropdown:
   ```ts
   { type: "docsVersionDropdown", position: "right" }
@@ -61,6 +62,7 @@ on:
 jobs:
   deploy:
     uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
+    secrets: inherit
     permissions:
       contents: write
       pages: write
