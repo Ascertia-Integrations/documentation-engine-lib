@@ -51,6 +51,9 @@ jobs:
   deploy:
     uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
     secrets: inherit
+    with:
+      # Use `npm ci` if your lockfile is stable; use `npm install` when bootstrapping.
+      install_command: npm ci
     permissions:
       contents: write
       pages: write

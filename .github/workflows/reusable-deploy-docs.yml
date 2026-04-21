@@ -37,6 +37,11 @@ on:
         required: false
         type: string
         default: npm run build
+      install_command:
+        description: Dependency install command for the Docusaurus site.
+        required: false
+        type: string
+        default: npm ci
       pages_mode:
         description: GitHub Pages mode for computing SITE_URL and BASE_URL.
         required: false
@@ -49,8 +54,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: pages-${{ github.repository }}
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
@@ -75,9 +80,10 @@ jobs:
         run: |
           npm config set @ascertia-integrations:registry https://npm.pkg.github.com
           npm config set //npm.pkg.github.com/:_authToken "${{ secrets.DOCS_PLATFORM_NPM_TOKEN }}"
+          npm config set always-auth true
 
       - name: Install dependencies
-        run: npm ci
+        run: ${{ inputs.install_command }}
 
       - name: Fetch triggering branch (if release)
         if: ${{ github.ref_name != inputs.default_branch }}
