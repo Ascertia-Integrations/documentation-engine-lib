@@ -3,7 +3,7 @@ dist/
 .turbo/
 .cache/
 .DS_Store
+*.tgz
 
 # Changesets
 .changeset/pre.json
-
