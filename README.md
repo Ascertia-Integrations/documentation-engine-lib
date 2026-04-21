@@ -42,7 +42,7 @@ A consumer (product) documentation repository should implement:
   ```ini
   @ascertia-integrations:registry=https://npm.pkg.github.com
   ```
-- **CI secret**: set `DOCS_PLATFORM_NPM_TOKEN` (a PAT with `read:packages`) in the consumer repo (or org), and pass it to the reusable workflow (for example via `secrets: inherit`).
+- **CI secret**: set `DOCS_PLATFORM_NPM_TOKEN` to a PAT that includes **`read:packages`** (and can access private packages). If the packages are private/repo-scoped, a classic PAT typically also needs **`repo`**. Pass the secret to the reusable workflow (for example via `secrets: inherit`).
 - **Docusaurus navbar** includes the version dropdown:
   ```ts
   { type: "docsVersionDropdown", position: "right" }

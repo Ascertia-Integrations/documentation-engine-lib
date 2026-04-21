@@ -21,7 +21,7 @@ Add `.npmrc`:
 ```
 
 GitHub Actions uses `GITHUB_TOKEN` for auth in the reusable workflow.
-For cross-repo installs from GitHub Packages, create a repo (or org) secret named `DOCS_PLATFORM_NPM_TOKEN` that contains a PAT with `read:packages` (and access to private packages if applicable). The consumer workflow should pass it to the reusable workflow (for example via `secrets: inherit`).
+For cross-repo installs from GitHub Packages, create a repo (or org) secret named `DOCS_PLATFORM_NPM_TOKEN` containing a PAT that includes **`read:packages`** and can access private packages. If the packages are private/repo-scoped, a classic PAT typically also needs **`repo`**. The consumer workflow should pass it to the reusable workflow (for example via `secrets: inherit`).
 
 ## Docusaurus config requirements
 
