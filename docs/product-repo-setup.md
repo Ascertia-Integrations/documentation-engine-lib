@@ -56,3 +56,9 @@ jobs:
       pages: write
       id-token: write
 ```
+
+## Platform repo configuration (reusable workflow access)
+
+If `docusaurus-github-pages-poc` is private, ensure GitHub allows other repos to reuse its workflows:
+
+- In the platform repo settings: **Actions → General → Access** → allow reuse by the organization (or selected repositories).

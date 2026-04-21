@@ -20,6 +20,12 @@ Product repos can call:
 uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
 ```
 
+## Reusable workflow access (GitHub setting)
+
+If this platform repo is private, GitHub must allow other repos to call its reusable workflows.
+
+- In `docusaurus-github-pages-poc` repo settings: **Actions → General → Access** → allow **All repositories in the organization** (or the specific consumer repos).
+
 ## Consumer repo requirements
 
 A consumer (product) documentation repository should implement:
