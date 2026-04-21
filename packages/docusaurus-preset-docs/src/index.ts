@@ -22,14 +22,18 @@ export default function presetDocs(context: unknown, options: any): unknown {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require("@docusaurus/preset-classic");
 
+  // Docusaurus passes preset/plugin ids via `options.id`. The classic preset does
+  // not accept this key, so strip it before delegating.
+  const { id: _ignoredId, ...classicOptions } = (options ?? {}) as Record<string, unknown>;
+
   const packageRoot = path.resolve(__dirname, "..");
   const sharedCssPath = path.join(packageRoot, "theme", "custom.css");
 
   const resolvedOptions = {
-    ...(options ?? {}),
+    ...classicOptions,
     theme: {
-      ...(options?.theme ?? {}),
-      customCss: mergeThemeCustomCss(options?.theme?.customCss, sharedCssPath),
+      ...(classicOptions as any)?.theme,
+      customCss: mergeThemeCustomCss((classicOptions as any)?.theme?.customCss, sharedCssPath),
     },
   };
 
@@ -37,9 +41,9 @@ export default function presetDocs(context: unknown, options: any): unknown {
 
   // Add our theme components (theme folder) without replacing the classic preset theme.
   const themes = Array.isArray(classicResult?.themes) ? classicResult.themes : [];
+  const ourTheme = require.resolve("./themePlugin");
   return {
     ...classicResult,
-    themes: [...themes, packageRoot],
+    themes: [...themes, ourTheme],
   };
 }
-

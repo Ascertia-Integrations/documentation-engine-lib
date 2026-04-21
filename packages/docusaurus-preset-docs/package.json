@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build",
     "test": "echo \"(no tests)\"",
     "lint": "echo \"(no lint)\""
   },
@@ -23,4 +24,3 @@
     "registry": "https://npm.pkg.github.com"
   }
 }
-
