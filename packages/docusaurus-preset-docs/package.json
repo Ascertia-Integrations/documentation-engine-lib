@@ -1,0 +1,26 @@
+{
+  "name": "@ascertia-integrations/docusaurus-preset-docs",
+  "version": "0.0.0",
+  "description": "Shared Docusaurus preset for product documentation sites.",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "theme"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "echo \"(no tests)\"",
+    "lint": "echo \"(no lint)\""
+  },
+  "peerDependencies": {
+    "@docusaurus/core": "^2.0.0 || ^3.0.0",
+    "@docusaurus/preset-classic": "^2.0.0 || ^3.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
+

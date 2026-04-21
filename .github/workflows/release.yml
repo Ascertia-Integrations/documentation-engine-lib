@@ -1,0 +1,42 @@
+name: release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+
+jobs:
+  changesets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Configure npm (GitHub Packages)
+        run: |
+          npm config set @ascertia-integrations:registry https://npm.pkg.github.com
+          npm config set //npm.pkg.github.com/:_authToken "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create release PR or publish
+        uses: changesets/action@v1
+        with:
+          version: npm run version-packages
+          publish: npm run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

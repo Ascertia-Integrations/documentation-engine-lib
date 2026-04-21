@@ -1,0 +1,20 @@
+{
+  "name": "docusaurus-docs-platform",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm -ws run build",
+    "test": "npm -ws run test",
+    "lint": "npm -ws run lint",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.28.1",
+    "@types/node": "^22.15.18",
+    "typescript": "^5.8.3"
+  }
+}

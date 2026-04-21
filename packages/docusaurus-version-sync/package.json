@@ -1,0 +1,30 @@
+{
+  "name": "@ascertia-integrations/docusaurus-version-sync",
+  "version": "0.0.0",
+  "description": "Sync X.Y.Z git branches into Docusaurus versioned docs.",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "docusaurus-sync-version": "bin/docusaurus-sync-version.js"
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "echo \"(no lint)\""
+  },
+  "dependencies": {
+    "tar": "^7.5.1"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
