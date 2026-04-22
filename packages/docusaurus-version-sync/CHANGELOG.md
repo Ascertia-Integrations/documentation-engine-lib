@@ -1,5 +1,11 @@
 # @ascertia-integrations/docusaurus-version-sync
 
+## 0.1.7
+
+### Patch Changes
+
+- d3fa1b2: Add @types/tar to fix TypeScript compilation error.
+
 ## 0.1.6
 
 ### Patch Changes
