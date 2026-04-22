@@ -3,7 +3,7 @@ import path from "node:path";
 import os from "node:os";
 import { spawn } from "node:child_process";
 import { pipeline } from "node:stream/promises";
-import * as tar from "tar";
+import tar = require("tar");
 import { execGit } from "./git";
 import { isPlainSemver, sortVersionsDesc } from "./versions";
 
@@ -86,10 +86,10 @@ async function exportPathsFromGitRef(params: {
   });
 
   try {
-    await pipeline(git.stdout, tar.x({ cwd: params.destDir }));
+    await pipeline(git.stdout, tar.extract({ cwd: params.destDir }));
   } catch (error) {
     const e = error instanceof Error ? error : new Error(String(error));
-    throw new Error(`git archive extract failed for ${params.gitRef}\n${stderr}\n${e.message}`.trim());
+    throw new Error(`git archive extract failed for ${params.gitRef}\n${stderr}\n${e.message}\n${e.stack}`.trim());
   }
 
   const exitCode = await exitCodePromise;
