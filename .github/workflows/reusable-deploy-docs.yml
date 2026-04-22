@@ -31,7 +31,7 @@ on:
         description: Command to sync a release branch into Docusaurus versions.
         required: false
         type: string
-        default: npx docusaurus-sync-version
+        default: npx --yes @ascertia-integrations/docusaurus-version-sync@latest
       build_command:
         description: Build command for the Docusaurus site.
         required: false
@@ -87,6 +87,9 @@ jobs:
 
       - name: Install dependencies
         run: ${{ inputs.install_command }}
+
+      - name: Update Ascertia integrations packages
+        run: npm install @ascertia-integrations/docusaurus-preset-docs@latest
 
       - name: Fetch triggering branch (if release)
         if: ${{ github.ref_name != inputs.default_branch }}
