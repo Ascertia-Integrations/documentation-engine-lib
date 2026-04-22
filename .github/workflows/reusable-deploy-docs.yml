@@ -80,7 +80,6 @@ jobs:
         run: |
           npm config set @ascertia-integrations:registry https://npm.pkg.github.com
           npm config set //npm.pkg.github.com/:_authToken "${{ secrets.DOCS_PLATFORM_NPM_TOKEN }}"
-          npm config set always-auth true
 
       - name: Install dependencies
         run: ${{ inputs.install_command }}

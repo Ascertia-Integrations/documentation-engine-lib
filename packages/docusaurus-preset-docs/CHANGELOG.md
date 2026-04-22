@@ -1,5 +1,11 @@
 # @ascertia-integrations/docusaurus-preset-docs
 
+## 0.1.2
+
+### Patch Changes
+
+- Fix reusable workflow npm config step for npm 10.x by removing unsupported `npm config set always-auth` usage.
+
 ## 0.1.1
 
 ### Patch Changes
