@@ -28,8 +28,10 @@ function usage(): string {
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
-  const version = args[0];
-  if (!version || version.startsWith("-")) {
+  const positionalArgs = args.filter((arg) => !arg.startsWith("-"));
+  const version = positionalArgs[0];
+
+  if (!version) {
     // eslint-disable-next-line no-console
     console.error(usage());
     process.exit(2);
