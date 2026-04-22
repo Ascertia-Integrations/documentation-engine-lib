@@ -1,5 +1,11 @@
 # @ascertia-integrations/docusaurus-version-sync
 
+## 0.1.8
+
+### Patch Changes
+
+- 2ace7b2: fix: change tar import syntax to commonjs style to resolve runtime undefined error
+
 ## 0.1.7
 
 ### Patch Changes
