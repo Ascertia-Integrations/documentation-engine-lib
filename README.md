@@ -79,3 +79,26 @@ Notes:
 - On pushes to `X.Y.Z` branches, the workflow runs `docusaurus-sync-version X.Y.Z`, commits `versions.json` / `versioned_*` to `main`, then builds and deploys.
 - If your repo does not use `docs/` or `sidebars.ts`, override `sync_command` to pass `--docs-dir` / `--sidebar-path`.
 - If your repo’s lockfile frequently changes or you’re bootstrapping a new repo, override `install_command` to `npm install` instead of `npm ci`.
+
+## Critical Configuration & Troubleshooting
+
+### 1. GitHub Pages Environment (Required)
+If your deployment fails with a **404** when running from a version branch (`1.0.0`), you must update your environment protection rules:
+- Go to: **Settings → Environments → `github-pages`**.
+- Under **Deployment branches**, change the rule to **"No restrictions"** (or add your version branch patterns like `*.*.*`).
+- This allows GitHub Actions to deploy to Pages even when triggered by a release branch.
+
+### 2. Permissions & Secrets
+- **`DOCS_PLATFORM_NPM_TOKEN`**: Must be a PAT with `read:packages` scope.
+- **Workflow Permissions**: The calling workflow MUST have `contents: write` and `pages: write` permissions.
+
+### 3. CLI Argument Order
+When overriding the `sync_command`, ensure the **version number** is the first argument after the command name:
+- ✅ `npx docusaurus-sync-version 1.0.0 --allow-dirty`
+- ❌ `npx docusaurus-sync-version --allow-dirty 1.0.0` (May fail in older versions of the tool).
+
+### 4. Publishing New Versions
+To update the platform tools (like the sync CLI):
+1. Bump the version in `packages/docusaurus-version-sync/package.json`.
+2. Push to `main`.
+3. The **"Publish Package"** workflow will automatically build and publish to GitHub Packages.
