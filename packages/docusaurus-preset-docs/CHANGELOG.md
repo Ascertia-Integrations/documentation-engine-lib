@@ -1,5 +1,11 @@
 # @ascertia-integrations/docusaurus-preset-docs
 
+## 0.1.3
+
+### Patch Changes
+
+- 775f27e: Update common CSS to match GitBook style, including navbar, sidebar, and typography refinements.
+
 ## 0.1.2
 
 ### Patch Changes
