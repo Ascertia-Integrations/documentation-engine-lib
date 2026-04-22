@@ -31,6 +31,17 @@ export default function presetDocs(context: unknown, options: any): unknown {
 
   const resolvedOptions = {
     ...classicOptions,
+    docs: {
+      editUrl: undefined, // Disable "Edit this page" by default
+      ...((classicOptions as any)?.docs || {}),
+    },
+    blog: {
+      editUrl: undefined,
+      onInlineTags: "warn",
+      onInlineAuthors: "warn",
+      onUntruncatedBlogPosts: "warn",
+      ...((classicOptions as any)?.blog || {}),
+    },
     theme: {
       ...(classicOptions as any)?.theme,
       customCss: mergeThemeCustomCss((classicOptions as any)?.theme?.customCss, sharedCssPath),
