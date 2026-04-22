@@ -36,8 +36,8 @@ A consumer (product) documentation repository should implement:
   - `versioned_docs/`
   - `versioned_sidebars/`
 - **Dependencies**:
-  - `@ascertia-integrations/docusaurus-preset-docs`
-  - `@ascertia-integrations/docusaurus-version-sync` (CLI: `docusaurus-sync-version`)
+  - `@ascertia-integrations/docusaurus-preset-docs` (The pipeline automatically forces updates to the latest version of this preset during the build, so you rarely need to manually bump it in `package.json`).
+  - *Note: You do NOT need to include `@ascertia-integrations/docusaurus-version-sync` as a dependency. The pipeline uses `npx --yes` to dynamically fetch the absolute latest version at runtime.*
 - **GitHub Packages npm config** (example `.npmrc`):
   ```ini
   @ascertia-integrations:registry=https://npm.pkg.github.com
@@ -79,6 +79,11 @@ Notes:
 - On pushes to `X.Y.Z` branches, the workflow runs `docusaurus-sync-version X.Y.Z`, commits `versions.json` / `versioned_*` to `main`, then builds and deploys.
 - If your repo does not use `docs/` or `sidebars.ts`, override `sync_command` to pass `--docs-dir` / `--sidebar-path`.
 - If your repo’s lockfile frequently changes or you’re bootstrapping a new repo, override `install_command` to `npm install` instead of `npm ci`.
+
+### The "Zero-Maintenance" Architecture
+The pipeline is designed so that documentation authors **only need to write Markdown**. They do not need to worry about updating NPM packages or lockfiles when the platform tools change.
+- The pipeline explicitly runs `npm install @ascertia-integrations/docusaurus-preset-docs@latest` to auto-inject the latest CSS and layout components.
+- The pipeline executes `npx --yes @ascertia-integrations/docusaurus-version-sync@latest` to guarantee it runs the most up-to-date version syncing logic, ignoring local project lockfiles.
 
 ## Critical Configuration & Troubleshooting
 
