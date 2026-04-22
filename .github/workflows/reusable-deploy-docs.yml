@@ -31,7 +31,7 @@ on:
         description: Command to sync a release branch into Docusaurus versions.
         required: false
         type: string
-        default: npx docusaurus-sync-version
+        default: npx docusaurus-sync-version --allow-dirty
       build_command:
         description: Build command for the Docusaurus site.
         required: false
@@ -78,6 +78,10 @@ jobs:
 
       - name: Configure npm (GitHub Packages)
         run: |
+          if [ -z "${{ secrets.DOCS_PLATFORM_NPM_TOKEN }}" ]; then
+            echo "::error::DOCS_PLATFORM_NPM_TOKEN secret is missing or empty."
+            exit 1
+          fi
           npm config set @ascertia-integrations:registry https://npm.pkg.github.com
           npm config set //npm.pkg.github.com/:_authToken "${{ secrets.DOCS_PLATFORM_NPM_TOKEN }}"
 

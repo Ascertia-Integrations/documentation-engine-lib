@@ -56,6 +56,10 @@ async function main(): Promise<void> {
 
 main().catch((error) => {
   // eslint-disable-next-line no-console
-  console.error(error instanceof Error ? error.message : String(error));
+  console.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+  if (error instanceof Error && error.message.includes("Working tree is dirty")) {
+    console.error("\nTip: This usually happens in CI when dependencies are installed or config is modified.");
+    console.error("Use the --allow-dirty flag to proceed anyway.");
+  }
   process.exit(1);
 });
