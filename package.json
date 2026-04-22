@@ -9,7 +9,7 @@
     "test": "npm -ws run test",
     "lint": "npm -ws run lint",
     "changeset": "changeset",
-    "version-packages": "changeset version",
+    "version-packages": "changeset version && npm install --package-lock-only",
     "release": "changeset publish"
   },
   "devDependencies": {
