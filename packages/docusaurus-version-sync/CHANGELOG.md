@@ -1,5 +1,11 @@
 # @ascertia-integrations/docusaurus-version-sync
 
+## 0.1.6
+
+### Patch Changes
+
+- dcd587d: Fix tar import in version sync tool to resolve "Cannot read properties of undefined (reading 'x')" error.
+
 ## 0.1.2
 
 ### Patch Changes
