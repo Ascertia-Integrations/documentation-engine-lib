@@ -1,0 +1,13 @@
+FROM node:20-slim
+
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+# We will mount the repositories into /workspace/poc and /workspace/client
+# We will also expect DOCS_PLATFORM_NPM_TOKEN as an environment variable.
+
+COPY reproduce.sh /usr/local/bin/reproduce
+RUN chmod +x /usr/local/bin/reproduce
+
+CMD ["/usr/local/bin/reproduce"]
