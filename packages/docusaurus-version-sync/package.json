@@ -23,6 +23,7 @@
     "tar": "^6.2.1"
   },
   "devDependencies": {
+    "@types/tar": "^6.1.13",
     "vitest": "^3.2.4"
   },
   "publishConfig": {
