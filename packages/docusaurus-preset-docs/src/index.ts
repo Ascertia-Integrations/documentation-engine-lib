@@ -57,8 +57,5 @@ export default function presetDocs(context: unknown, options: any): unknown {
   return {
     ...classicResult,
     themes: [...themes, ourTheme],
-    getClientModules() {
-      return [sharedCssPath];
-    },
   };
 }

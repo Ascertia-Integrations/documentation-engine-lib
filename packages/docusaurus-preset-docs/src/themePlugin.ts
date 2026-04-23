@@ -10,6 +10,9 @@ export default function themePlugin(_context: LoadContext): Plugin<void> {
     getTypeScriptThemePath() {
       return path.resolve(__dirname, "..", "theme");
     },
+    getClientModules() {
+      return [path.resolve(__dirname, "..", "theme", "custom.css")];
+    },
     getThemeConfig() {
       return {
         navbar: {
