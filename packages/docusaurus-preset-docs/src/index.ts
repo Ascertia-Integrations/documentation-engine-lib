@@ -27,7 +27,7 @@ export default function presetDocs(context: unknown, options: any): unknown {
   const { id: _ignoredId, ...classicOptions } = (options ?? {}) as Record<string, unknown>;
 
   const packageRoot = path.resolve(__dirname, "..");
-  const sharedCssPath = path.join(packageRoot, "theme", "custom.css");
+  const sharedCssPath = require.resolve("../theme/custom.css");
 
   const resolvedOptions = {
     ...classicOptions,
@@ -53,8 +53,12 @@ export default function presetDocs(context: unknown, options: any): unknown {
   // Add our theme components (theme folder) without replacing the classic preset theme.
   const themes = Array.isArray(classicResult?.themes) ? classicResult.themes : [];
   const ourTheme = require.resolve("./themePlugin");
+  
   return {
     ...classicResult,
     themes: [...themes, ourTheme],
+    getClientModules() {
+      return [sharedCssPath];
+    },
   };
 }
