@@ -42,6 +42,7 @@ A consumer (product) documentation repository should implement:
   ```ini
   @ascertia-integrations:registry=https://npm.pkg.github.com
   ```
+- **GitHub Pages**: enable GitHub Pages for the repository in **Settings → Pages** and set the source to **GitHub Actions**.
 - **CI secret**: set `DOCS_PLATFORM_NPM_TOKEN` to a PAT that includes **`read:packages`** (and can access private packages). If the packages are private/repo-scoped, a classic PAT typically also needs **`repo`**. Pass the secret to the reusable workflow (for example via `secrets: inherit`).
 - **Docusaurus navbar** includes the version dropdown:
   ```ts
@@ -88,10 +89,21 @@ The pipeline is designed so that documentation authors **only need to write Mark
 ## Critical Configuration & Troubleshooting
 
 ### 1. GitHub Pages Environment (Required)
-If your deployment fails with a **404** when running from a version branch (`1.0.0`), you must update your environment protection rules:
-- Go to: **Settings → Environments → `github-pages`**.
-- Under **Deployment branches**, change the rule to **"No restrictions"** (or add your version branch patterns like `*.*.*`).
-- This allows GitHub Actions to deploy to Pages even when triggered by a release branch.
+If your deployment fails when running from a version branch such as `1.0.0` or `2.0.6`, check the `github-pages` environment first.
+
+That error usually means the workflow is trying to deploy to the `github-pages` environment, but that environment only allows deployments from specific branches and the current release branch is not allowed. GitHub environments can enforce branch restrictions, required approvals, delays, and other deployment protection rules. GitHub Pages custom workflows use the `github-pages` environment by default, so the deploy job must satisfy those rules before deployment is allowed.
+
+What to check:
+
+- Go to **Settings → Environments → `github-pages`**.
+- Review **Deployment branches and tags** or any branch restriction rules.
+- If the environment is limited to `main` or `master`, a workflow running from `1.0.0`, `2.0.6`, or another release branch will be blocked.
+
+Choose the behavior you want:
+
+- Deploy only from `main`: keep the environment restriction and make sure the Pages deploy workflow only runs on `main`.
+- Allow release branches to deploy: add the relevant release branch names or patterns such as `*.*.*` to the allowed branches and tags for the `github-pages` environment.
+- Use tags or releases instead of branch deploys: update the environment rule to match that release process.
 
 ### 2. Permissions & Secrets
 - **`DOCS_PLATFORM_NPM_TOKEN`**: Must be a PAT with `read:packages` scope.
