@@ -1,7 +1,7 @@
 import path from "node:path";
-import type { Plugin, LoadContext } from "@docusaurus/types";
+import type { LoadContext } from "@docusaurus/types";
 
-export default function themePlugin(_context: LoadContext): Plugin<void> {
+export default function themePlugin(_context: LoadContext): any {
   return {
     name: "@ascertia-integrations/docusaurus-preset-docs-theme",
     getThemePath() {
