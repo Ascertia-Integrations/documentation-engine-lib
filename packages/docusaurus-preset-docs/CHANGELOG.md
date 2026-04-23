@@ -1,5 +1,13 @@
 # @ascertia-integrations/docusaurus-preset-docs
 
+## 0.1.7
+
+### Patch Changes
+
+- 43e5fd7: Inject the docs version dropdown from the shared navbar theme so consumer repos
+  do not need to configure it manually, and omit the unreleased `Next` entry by
+  default.
+
 ## 0.1.3
 
 ### Patch Changes
