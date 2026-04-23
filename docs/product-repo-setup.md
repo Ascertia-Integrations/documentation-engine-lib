@@ -25,11 +25,10 @@ For cross-repo installs from GitHub Packages, create a repo (or org) secret name
 
 ## Docusaurus config requirements
 
-Ensure the navbar contains the version dropdown:
-
-```ts
-{ type: "docsVersionDropdown", position: "right" }
-```
+The shared preset injects the version dropdown automatically and shows released
+versions by default. Consumer repos do not need to add
+`docsVersionDropdown` manually unless they want to override its placement or
+behavior.
 
 Compute Pages-safe URL defaults:
 

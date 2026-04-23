@@ -44,10 +44,7 @@ A consumer (product) documentation repository should implement:
   ```
 - **GitHub Pages**: enable GitHub Pages for the repository in **Settings → Pages** and set the source to **GitHub Actions**.
 - **CI secret**: set `DOCS_PLATFORM_NPM_TOKEN` to a PAT that includes **`read:packages`** (and can access private packages). If the packages are private/repo-scoped, a classic PAT typically also needs **`repo`**. Pass the secret to the reusable workflow (for example via `secrets: inherit`).
-- **Docusaurus navbar** includes the version dropdown:
-  ```ts
-  { type: "docsVersionDropdown", position: "right" }
-  ```
+- **Docusaurus navbar**: the shared preset injects the version dropdown automatically and shows released versions by default. Consumer repos only need to configure it if they want custom placement or behavior.
 - **Pages-safe URL defaults** in `docusaurus.config.ts`:
   ```ts
   const url = process.env.SITE_URL ?? "http://localhost:3000";
