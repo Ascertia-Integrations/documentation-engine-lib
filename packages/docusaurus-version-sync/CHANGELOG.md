@@ -1,5 +1,13 @@
 # @ascertia-integrations/docusaurus-version-sync
 
+## 0.1.9
+
+### Patch Changes
+
+- eb3d3fa: Add a `--remove` mode to prune deleted release versions from generated
+  Docusaurus artifacts so GitHub Pages deployments can remove orphaned version
+  pages when a release branch is deleted.
+
 ## 0.1.8
 
 ### Patch Changes
