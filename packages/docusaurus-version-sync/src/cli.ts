@@ -1,5 +1,5 @@
 import path from "node:path";
-import { syncVersionFromGitRef } from "./sync";
+import { pruneVersion, syncVersionFromGitRef } from "./sync";
 
 function getArgValue(args: string[], name: string): string | null {
   const idx = args.indexOf(name);
@@ -21,6 +21,7 @@ function usage(): string {
     "  --docs-dir <path>        Docs directory (default: docs)",
     "  --sidebar-path <path>    Sidebar file path (default: sidebars.ts)",
     "  --git-ref <ref>          Git ref/branch to export (default: <X.Y.Z>)",
+    "  --remove                 Delete generated artifacts for the version",
     "  --allow-dirty            Allow dirty working tree (default: false)",
     "  --dry-run                Validate only; no changes (default: false)",
   ].join("\n");
@@ -42,8 +43,18 @@ async function main(): Promise<void> {
   const docsDir = getArgValue(args, "--docs-dir") ?? "docs";
   const sidebarPath = getArgValue(args, "--sidebar-path") ?? "sidebars.ts";
   const gitRef = getArgValue(args, "--git-ref") ?? version;
+  const remove = hasFlag(args, "--remove");
   const allowDirty = hasFlag(args, "--allow-dirty");
   const dryRun = hasFlag(args, "--dry-run");
+
+  if (remove) {
+    await pruneVersion({
+      siteDir: path.resolve(siteDir),
+      version,
+      allowDirty,
+    });
+    return;
+  }
 
   await syncVersionFromGitRef({
     siteDir: path.resolve(siteDir),

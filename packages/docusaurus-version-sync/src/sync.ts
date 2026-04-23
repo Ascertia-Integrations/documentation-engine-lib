@@ -17,6 +17,12 @@ export type SyncOptions = {
   dryRun: boolean;
 };
 
+export type PruneOptions = {
+  siteDir: string;
+  version: string;
+  allowDirty: boolean;
+};
+
 async function pathExists(targetPath: string): Promise<boolean> {
   try {
     await fs.stat(targetPath);
@@ -42,6 +48,48 @@ async function writeJsonArray(filePath: string, values: string[]): Promise<void>
 
 async function removeIfExists(targetPath: string): Promise<void> {
   await fs.rm(targetPath, { recursive: true, force: true });
+}
+
+function assertPlainSemver(version: string): void {
+  if (!isPlainSemver(version)) {
+    throw new Error(`Version must match X.Y.Z, got: ${version}`);
+  }
+}
+
+async function ensureWorkingTreeClean(siteDir: string, allowDirty: boolean): Promise<void> {
+  if (allowDirty) return;
+  const { stdout } = await execGit(["status", "--porcelain"], { cwd: siteDir });
+  if (stdout.trim().length > 0) {
+    throw new Error("Working tree is dirty. Commit/stash changes or use --allow-dirty.");
+  }
+}
+
+function getVersionArtifactPaths(siteDir: string, version: string): {
+  versionsPath: string;
+  versionedDocsPath: string;
+  versionedSidebarsDir: string;
+} {
+  return {
+    versionsPath: path.join(siteDir, "versions.json"),
+    versionedDocsPath: path.join(siteDir, "versioned_docs", `version-${version}`),
+    versionedSidebarsDir: path.join(siteDir, "versioned_sidebars"),
+  };
+}
+
+async function removeVersionArtifacts(siteDir: string, version: string): Promise<void> {
+  const { versionsPath, versionedDocsPath, versionedSidebarsDir } = getVersionArtifactPaths(siteDir, version);
+  const versionsFileExists = await pathExists(versionsPath);
+  const versions = (await readJsonArray(versionsPath)) ?? [];
+  const filtered = sortVersionsDesc(versions.filter((v) => v !== version));
+
+  if (versionsFileExists || filtered.length > 0) {
+    await writeJsonArray(versionsPath, filtered);
+  }
+
+  await removeIfExists(versionedDocsPath);
+  for (const ext of ["json", "js", "cjs"]) {
+    await removeIfExists(path.join(versionedSidebarsDir, `version-${version}-sidebars.${ext}`));
+  }
 }
 
 function findLocalDocusaurusBin(siteDir: string): string {
@@ -99,20 +147,13 @@ async function exportPathsFromGitRef(params: {
 }
 
 export async function syncVersionFromGitRef(options: SyncOptions): Promise<void> {
-  if (!isPlainSemver(options.version)) {
-    throw new Error(`Version must match X.Y.Z, got: ${options.version}`);
-  }
+  assertPlainSemver(options.version);
 
   const siteDir = path.resolve(options.siteDir);
   const { stdout: repoRootOut } = await execGit(["rev-parse", "--show-toplevel"], { cwd: siteDir });
   const repoRoot = repoRootOut.trim();
 
-  if (!options.allowDirty) {
-    const { stdout } = await execGit(["status", "--porcelain"], { cwd: siteDir });
-    if (stdout.trim().length > 0) {
-      throw new Error("Working tree is dirty. Commit/stash changes or use --allow-dirty.");
-    }
-  }
+  await ensureWorkingTreeClean(siteDir, options.allowDirty);
 
   let resolvedGitRef = options.gitRef;
   try {
@@ -133,10 +174,7 @@ export async function syncVersionFromGitRef(options: SyncOptions): Promise<void>
 
   const repoDocsDir = path.join(siteDir, options.docsDir);
   const repoSidebarPath = path.join(siteDir, options.sidebarPath);
-  const versionsPath = path.join(siteDir, "versions.json");
-
-  const versionedDocsPath = path.join(siteDir, "versioned_docs", `version-${options.version}`);
-  const versionedSidebarsDir = path.join(siteDir, "versioned_sidebars");
+  const { versionsPath, versionedDocsPath, versionedSidebarsDir } = getVersionArtifactPaths(siteDir, options.version);
 
   const backupDocsDir = path.join(backupDir, "docs");
   const backupSidebarPath = path.join(backupDir, "sidebars");
@@ -219,4 +257,11 @@ export async function syncVersionFromGitRef(options: SyncOptions): Promise<void>
 
     await removeIfExists(tmpRoot);
   }
+}
+
+export async function pruneVersion(options: PruneOptions): Promise<void> {
+  assertPlainSemver(options.version);
+  const siteDir = path.resolve(options.siteDir);
+  await ensureWorkingTreeClean(siteDir, options.allowDirty);
+  await removeVersionArtifacts(siteDir, options.version);
 }

@@ -42,12 +42,15 @@ In the product repo, add a workflow that calls the reusable workflow:
 ```yaml
 name: deploy-docs
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
       - "*.*.*"
+  delete:
 jobs:
   deploy:
+    if: ${{ github.event_name != 'delete' }}
     uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
     secrets: inherit
     with:
@@ -57,7 +60,24 @@ jobs:
       contents: write
       pages: write
       id-token: write
+
+  prune-deleted-release:
+    if: ${{ github.event_name == 'delete' && github.event.ref_type == 'branch' }}
+    uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
+    secrets: inherit
+    with:
+      install_command: npm ci
+      release_action: prune
+      release_ref: ${{ github.event.ref }}
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
 ```
+
+When an `X.Y.Z` release branch is deleted, the delete-triggered job prunes the
+corresponding generated version artifacts from `main`, rebuilds the site, and
+redeploys GitHub Pages so orphaned version URLs disappear.
 
 ## Platform repo configuration (reusable workflow access)
 

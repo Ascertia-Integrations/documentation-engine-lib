@@ -59,14 +59,29 @@ In the consumer repo, add a workflow that calls the reusable workflow (adjust th
 ```yaml
 name: deploy-docs
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
       - "*.*.*"
+  delete:
 jobs:
   deploy:
+    if: ${{ github.event_name != 'delete' }}
     uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
     secrets: inherit
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+
+  prune-deleted-release:
+    if: ${{ github.event_name == 'delete' && github.event.ref_type == 'branch' }}
+    uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
+    secrets: inherit
+    with:
+      release_action: prune
+      release_ref: ${{ github.event.ref }}
     permissions:
       contents: write
       pages: write
@@ -75,6 +90,7 @@ jobs:
 
 Notes:
 - On pushes to `X.Y.Z` branches, the workflow runs `docusaurus-sync-version X.Y.Z`, commits `versions.json` / `versioned_*` to `main`, then builds and deploys.
+- On deletion of an `X.Y.Z` branch, the workflow prunes that version from `versions.json` / `versioned_*`, rebuilds the site, and redeploys Pages so deleted release URLs disappear.
 - If your repo does not use `docs/` or `sidebars.ts`, override `sync_command` to pass `--docs-dir` / `--sidebar-path`.
 - If your repo’s lockfile frequently changes or you’re bootstrapping a new repo, override `install_command` to `npm install` instead of `npm ci`.
 
@@ -109,6 +125,7 @@ Choose the behavior you want:
 ### 3. CLI Argument Order
 When overriding the `sync_command`, ensure the **version number** is the first argument after the command name:
 - ✅ `npx docusaurus-sync-version 1.0.0 --allow-dirty`
+- ✅ `npx docusaurus-sync-version 1.0.0 --allow-dirty --remove`
 - ❌ `npx docusaurus-sync-version --allow-dirty 1.0.0` (May fail in older versions of the tool).
 
 ### 4. Publishing New Versions

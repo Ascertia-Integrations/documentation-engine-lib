@@ -1,3 +1,2 @@
 export { isPlainSemver, sortVersionsDesc } from "./versions";
-export { syncVersionFromGitRef } from "./sync";
-
+export { pruneVersion, syncVersionFromGitRef } from "./sync";

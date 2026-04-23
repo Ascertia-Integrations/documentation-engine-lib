@@ -28,10 +28,20 @@ on:
         type: string
         default: docs
       sync_command:
-        description: Command to sync a release branch into Docusaurus versions.
+        description: Command to sync or prune release versions in Docusaurus artifacts.
         required: false
         type: string
         default: npx --yes @ascertia-integrations/docusaurus-version-sync@latest
+      release_action:
+        description: How to handle versioned artifacts. auto=build main or sync release pushes, prune=remove a deleted release version.
+        required: false
+        type: string
+        default: auto
+      release_ref:
+        description: Release branch/version to sync or prune. Defaults to the triggering ref name when omitted.
+        required: false
+        type: string
+        default: ""
       build_command:
         description: Build command for the Docusaurus site.
         required: false
@@ -64,19 +74,72 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Resolve pipeline mode
+        id: release_mode
+        shell: bash
+        run: |
+          release_ref="${{ inputs.release_ref }}"
+          if [ -z "$release_ref" ]; then
+            release_ref="${{ github.ref_name }}"
+          fi
+          if [ -z "$release_ref" ]; then
+            release_ref="${{ inputs.default_branch }}"
+          fi
+
+          requested_action="${{ inputs.release_action }}"
+          case "$requested_action" in
+            auto)
+              if [ "$release_ref" = "${{ inputs.default_branch }}" ]; then
+                effective_action="build"
+              else
+                effective_action="sync"
+              fi
+              ;;
+            build|sync|prune)
+              effective_action="$requested_action"
+              ;;
+            *)
+              echo "::error::Unsupported release_action '$requested_action'."
+              exit 1
+              ;;
+          esac
+
+          if [[ "$release_ref" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            is_release_ref=true
+          else
+            is_release_ref=false
+          fi
+
+          should_run=true
+          if [ "$effective_action" = "sync" ] && [ "$is_release_ref" != "true" ]; then
+            echo "::error::release_action=sync requires an X.Y.Z release_ref, got '$release_ref'."
+            exit 1
+          fi
+          if [ "$effective_action" = "prune" ] && [ "$is_release_ref" != "true" ]; then
+            echo "Deleted ref '$release_ref' is not an X.Y.Z release branch; skipping prune."
+            should_run=false
+          fi
+
+          echo "release_ref=$release_ref" >> "$GITHUB_OUTPUT"
+          echo "effective_action=$effective_action" >> "$GITHUB_OUTPUT"
+          echo "should_run=$should_run" >> "$GITHUB_OUTPUT"
+
       - name: Checkout default branch
+        if: ${{ steps.release_mode.outputs.should_run == 'true' }}
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.default_branch }}
           fetch-depth: 0
 
       - name: Setup Node
+        if: ${{ steps.release_mode.outputs.should_run == 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
           cache: npm
 
       - name: Configure npm (GitHub Packages)
+        if: ${{ steps.release_mode.outputs.should_run == 'true' }}
         run: |
           if [ -z "${{ secrets.DOCS_PLATFORM_NPM_TOKEN }}" ]; then
             echo "::error::DOCS_PLATFORM_NPM_TOKEN secret is missing or empty."
@@ -86,21 +149,27 @@ jobs:
           npm config set //npm.pkg.github.com/:_authToken "${{ secrets.DOCS_PLATFORM_NPM_TOKEN }}"
 
       - name: Install dependencies
+        if: ${{ steps.release_mode.outputs.should_run == 'true' }}
         run: ${{ inputs.install_command }}
 
       - name: Update Ascertia integrations packages
+        if: ${{ steps.release_mode.outputs.should_run == 'true' }}
         run: npm install @ascertia-integrations/docusaurus-preset-docs@latest
 
       - name: Fetch triggering branch (if release)
-        if: ${{ github.ref_name != inputs.default_branch }}
-        run: git fetch --no-tags origin "${{ github.ref_name }}"
+        if: ${{ steps.release_mode.outputs.effective_action == 'sync' }}
+        run: git fetch --no-tags origin "${{ steps.release_mode.outputs.release_ref }}"
 
       - name: Sync versioned docs from release branch
-        if: ${{ github.ref_name != inputs.default_branch }}
-        run: ${{ inputs.sync_command }} "${{ github.ref_name }}" --allow-dirty --docs-dir "${{ inputs.docs_dir }}"
+        if: ${{ steps.release_mode.outputs.effective_action == 'sync' }}
+        run: ${{ inputs.sync_command }} "${{ steps.release_mode.outputs.release_ref }}" --allow-dirty --docs-dir "${{ inputs.docs_dir }}"
+
+      - name: Prune deleted release version
+        if: ${{ steps.release_mode.outputs.effective_action == 'prune' }}
+        run: ${{ inputs.sync_command }} "${{ steps.release_mode.outputs.release_ref }}" --allow-dirty --docs-dir "${{ inputs.docs_dir }}" --remove
 
       - name: Commit synced artifacts to default branch
-        if: ${{ github.ref_name != inputs.default_branch }}
+        if: ${{ steps.release_mode.outputs.effective_action == 'sync' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -111,10 +180,24 @@ jobs:
             echo "No version artifacts changed; skipping commit."
             exit 0
           fi
-          git commit -m "chore(docs): sync version ${{ github.ref_name }}"
+          git commit -m "chore(docs): sync version ${{ steps.release_mode.outputs.release_ref }}"
+          git push origin "HEAD:${{ inputs.default_branch }}"
+
+      - name: Commit pruned artifacts to default branch
+        if: ${{ steps.release_mode.outputs.effective_action == 'prune' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -f -- versions.json versioned_docs versioned_sidebars || true
+          if git diff --cached --quiet; then
+            echo "No version artifacts changed; skipping commit."
+            exit 0
+          fi
+          git commit -m "chore(docs): remove version ${{ steps.release_mode.outputs.release_ref }}"
           git push origin "HEAD:${{ inputs.default_branch }}"
 
       - name: Compute Pages env
+        if: ${{ steps.release_mode.outputs.should_run == 'true' }}
         run: |
           if [ "${{ inputs.pages_mode }}" = "org" ]; then
             echo "SITE_URL=https://${{ github.repository_owner }}.github.io" >> "$GITHUB_ENV"
@@ -125,16 +208,19 @@ jobs:
           fi
 
       - name: Build site
+        if: ${{ steps.release_mode.outputs.should_run == 'true' }}
         env:
           SITE_URL: ${{ env.SITE_URL }}
           BASE_URL: ${{ env.BASE_URL }}
         run: ${{ inputs.build_command }}
 
       - name: Upload Pages artifact
+        if: ${{ steps.release_mode.outputs.should_run == 'true' }}
         uses: actions/upload-pages-artifact@v3
         with:
           path: build
 
       - name: Deploy to GitHub Pages
+        if: ${{ steps.release_mode.outputs.should_run == 'true' }}
         id: deployment
         uses: actions/deploy-pages@v4
