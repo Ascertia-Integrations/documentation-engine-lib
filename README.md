@@ -1,6 +1,6 @@
-# Docs Platform (Docusaurus)
+# Documentation Engine Lib
 
-This repository is intended to be a **platform/tooling** repo that other product documentation repositories consume.
+This repository is the shared **library/tooling** repo that other product documentation repositories consume.
 
 It provides:
 - A shared Docusaurus preset/theme package.
@@ -12,19 +12,21 @@ It provides:
 - `@ascertia-integrations/docusaurus-preset-docs`
 - `@ascertia-integrations/docusaurus-version-sync` (CLI: `docusaurus-sync-version`)
 
+The repository is named **Documentation Engine Lib**, while the published package names stay unchanged for compatibility.
+
 ## Reusable workflow
 
 Product repos can call:
 
 ```yaml
-uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
+uses: Ascertia-Integrations/documentation-engine-lib/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
 ```
 
 ## Reusable workflow access (GitHub setting)
 
 If this platform repo is private, GitHub must allow other repos to call its reusable workflows.
 
-- In `docusaurus-github-pages-poc` repo settings: **Actions → General → Access** → allow **All repositories in the organization** (or the specific consumer repos).
+- In `documentation-engine-lib` repo settings: **Actions → General → Access** → allow **All repositories in the organization** (or the specific consumer repos).
 
 ## Consumer repo requirements
 
@@ -68,7 +70,7 @@ on:
 jobs:
   deploy:
     if: ${{ github.event_name != 'delete' }}
-    uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
+    uses: Ascertia-Integrations/documentation-engine-lib/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
     secrets: inherit
     permissions:
       contents: write
@@ -77,7 +79,7 @@ jobs:
 
   prune-deleted-release:
     if: ${{ github.event_name == 'delete' && github.event.ref_type == 'branch' }}
-    uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
+    uses: Ascertia-Integrations/documentation-engine-lib/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
     secrets: inherit
     with:
       release_action: prune

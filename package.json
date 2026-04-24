@@ -1,5 +1,5 @@
 {
-  "name": "docusaurus-docs-platform",
+  "name": "documentation-engine-lib",
   "private": true,
   "workspaces": [
     "packages/*"

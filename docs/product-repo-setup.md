@@ -1,6 +1,6 @@
 # Product repo setup (consumer)
 
-This file describes the expected contract for a product documentation repository that consumes this platform repo.
+This file describes the expected contract for a product documentation repository that consumes this Documentation Engine library repo.
 
 ## Dependencies
 
@@ -51,7 +51,7 @@ on:
 jobs:
   deploy:
     if: ${{ github.event_name != 'delete' }}
-    uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
+    uses: Ascertia-Integrations/documentation-engine-lib/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
     secrets: inherit
     with:
       # Use `npm ci` if your lockfile is stable; use `npm install` when bootstrapping.
@@ -63,7 +63,7 @@ jobs:
 
   prune-deleted-release:
     if: ${{ github.event_name == 'delete' && github.event.ref_type == 'branch' }}
-    uses: Ascertia-Integrations/docusaurus-github-pages-poc/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
+    uses: Ascertia-Integrations/documentation-engine-lib/.github/workflows/reusable-deploy-docs.yml@vX.Y.Z
     secrets: inherit
     with:
       install_command: npm ci
@@ -81,6 +81,6 @@ redeploys GitHub Pages so orphaned version URLs disappear.
 
 ## Platform repo configuration (reusable workflow access)
 
-If `docusaurus-github-pages-poc` is private, ensure GitHub allows other repos to reuse its workflows:
+If `documentation-engine-lib` is private, ensure GitHub allows other repos to reuse its workflows:
 
 - In the platform repo settings: **Actions → General → Access** → allow reuse by the organization (or selected repositories).
