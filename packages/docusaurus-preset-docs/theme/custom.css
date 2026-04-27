@@ -13,15 +13,31 @@
   --ifm-navbar-link-color: #1C1D20;
   --ifm-navbar-shadow: none;
 
+  /* Shared surfaces and text */
+  --ascertia-docs-surface-muted: #f9fafc;
+  --ascertia-docs-border-color: #efefef;
+  --ascertia-docs-text-strong: #1c1d20;
+  --ascertia-docs-text-muted: #757678;
+  --ascertia-docs-menu-hover-bg: rgba(8, 93, 254, 0.05);
+
   /* Sidebar */
-  --ifm-menu-color: #757678;
-  --ifm-menu-color-active: #085DFE;
+  --ifm-menu-color: var(--ascertia-docs-text-muted);
+  --ifm-menu-color-active: var(--ifm-color-primary);
   --ifm-menu-item-background-active: transparent;
-  --ifm-menu-item-background-hover: rgba(8, 93, 254, 0.05);
+  --ifm-menu-item-background-hover: var(--ascertia-docs-menu-hover-bg);
 
   /* Breadcrumbs */
-  --ifm-breadcrumb-item-color-active: #085DFE;
-  
+  --ifm-breadcrumb-item-color-active: var(--ifm-color-primary);
+
+  /* Admonitions */
+  --ascertia-docs-alert-surface: #f8fafc;
+  --ascertia-docs-alert-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --ascertia-docs-alert-secondary-bg: rgba(148, 163, 184, 0.08);
+  --ascertia-docs-alert-success-bg: #f0fdf4;
+  --ascertia-docs-alert-info-bg: #eff6ff;
+  --ascertia-docs-alert-warning-bg: #fffbeb;
+  --ascertia-docs-alert-danger-bg: #fef2f2;
+
   /* Typography & Defaults */
   --ifm-font-family-base: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
   --ifm-code-font-size: 95%;
@@ -29,24 +45,24 @@
 
 /* Navbar */
 .navbar {
-  border-bottom: 1px solid #EFEFEF;
+  border-bottom: 1px solid var(--ascertia-docs-border-color);
 }
 
 .navbar__title {
-  color: #1C1D20;
+  color: var(--ascertia-docs-text-strong);
   font-weight: 700;
 }
 
 /* Sidebar & Menu */
 .theme-doc-sidebar-container {
-  background-color: #F9FAFC !important;
-  border-right: 1px solid #EFEFEF;
+  background-color: var(--ascertia-docs-surface-muted) !important;
+  border-right: 1px solid var(--ascertia-docs-border-color);
 }
 
 .menu__link {
   font-size: 14px;
   font-weight: 400;
-  color: #757678;
+  color: var(--ifm-menu-color);
 }
 
 .menu__link,
@@ -56,7 +72,7 @@
 }
 
 .menu__link--active {
-  color: #085DFE !important;
+  color: var(--ifm-menu-color-active) !important;
   font-weight: 400;
 }
 
@@ -76,35 +92,48 @@
   border: none;
   border-left: 4px solid var(--ifm-alert-border-color);
   border-radius: 8px;
-  background-color: #f8fafc;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  background-color: var(--ascertia-docs-alert-surface);
+  box-shadow: var(--ascertia-docs-alert-shadow);
 }
 
 .alert--secondary {
   --ifm-alert-border-color: #94a3b8;
+  background-color: var(--ascertia-docs-alert-secondary-bg);
 }
 .alert--success {
   --ifm-alert-border-color: #22c55e;
-  background-color: #f0fdf4;
+  background-color: var(--ascertia-docs-alert-success-bg);
 }
 .alert--info {
   --ifm-alert-border-color: #3b82f6;
-  background-color: #eff6ff;
+  background-color: var(--ascertia-docs-alert-info-bg);
 }
 .alert--warning {
   --ifm-alert-border-color: #f59e0b;
-  background-color: #fffbeb;
+  background-color: var(--ascertia-docs-alert-warning-bg);
 }
 .alert--danger {
   --ifm-alert-border-color: #ef4444;
-  background-color: #fef2f2;
+  background-color: var(--ascertia-docs-alert-danger-bg);
 }
 
 /* Dark Mode Overrides */
 [data-theme='dark'] {
-  --ifm-navbar-background-color: #1b1b1d;
-  --ifm-navbar-link-color: #f5f6f7;
-  --ifm-menu-color: #b3b3b3;
-  --ifm-menu-color-active: #085DFE;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-navbar-background-color: #0f172a;
+  --ifm-navbar-link-color: #e5edf8;
+  --ifm-menu-color-active: #7ba4ff;
+  --docusaurus-highlighted-code-line-bg: rgba(15, 23, 42, 0.45);
+
+  --ascertia-docs-surface-muted: #111827;
+  --ascertia-docs-border-color: #253047;
+  --ascertia-docs-text-strong: #f4f7fb;
+  --ascertia-docs-text-muted: #a5afbf;
+  --ascertia-docs-menu-hover-bg: rgba(123, 164, 255, 0.12);
+  --ascertia-docs-alert-surface: #111827;
+  --ascertia-docs-alert-shadow: none;
+  --ascertia-docs-alert-secondary-bg: rgba(148, 163, 184, 0.14);
+  --ascertia-docs-alert-success-bg: rgba(34, 197, 94, 0.14);
+  --ascertia-docs-alert-info-bg: rgba(59, 130, 246, 0.14);
+  --ascertia-docs-alert-warning-bg: rgba(245, 158, 11, 0.14);
+  --ascertia-docs-alert-danger-bg: rgba(239, 68, 68, 0.14);
 }
