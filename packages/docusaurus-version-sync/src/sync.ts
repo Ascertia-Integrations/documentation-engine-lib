@@ -4,6 +4,7 @@ import os from "node:os";
 import { spawn } from "node:child_process";
 import { pipeline } from "node:stream/promises";
 import tar = require("tar");
+import { rewriteGitbookImageRefsInDir } from "./gitbook-assets";
 import { execGit } from "./git";
 import { isPlainSemver, sortVersionsDesc } from "./versions";
 
@@ -146,6 +147,19 @@ async function exportPathsFromGitRef(params: {
   }
 }
 
+async function gitPathExists(params: {
+  repoRoot: string;
+  gitRef: string;
+  repoPath: string;
+}): Promise<boolean> {
+  try {
+    await execGit(["cat-file", "-e", `${params.gitRef}:${params.repoPath}`], { cwd: params.repoRoot });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function syncVersionFromGitRef(options: SyncOptions): Promise<void> {
   assertPlainSemver(options.version);
 
@@ -197,6 +211,26 @@ export async function syncVersionFromGitRef(options: SyncOptions): Promise<void>
     if (!(await pathExists(exportedSidebarPath))) {
       throw new Error(`Exported branch ${options.gitRef} does not contain ${options.sidebarPath}`);
     }
+
+    if (
+      await gitPathExists({
+        repoRoot,
+        gitRef: resolvedGitRef,
+        repoPath: "static/img/gitbook",
+      })
+    ) {
+      await exportPathsFromGitRef({
+        repoRoot,
+        gitRef: resolvedGitRef,
+        paths: ["static/img/gitbook"],
+        destDir: exportDir,
+      });
+    }
+
+    await rewriteGitbookImageRefsInDir({
+      docsDir: exportedDocsDir,
+      gitbookAssetsDir: path.join(exportDir, "static", "img", "gitbook"),
+    });
 
     // Backup current docs + sidebars.
     if (await pathExists(repoDocsDir)) {
