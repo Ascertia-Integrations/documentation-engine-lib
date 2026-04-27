@@ -1,5 +1,11 @@
 # @ascertia-integrations/docusaurus-version-sync
 
+## 0.1.10
+
+### Patch Changes
+
+- 96b2519: Rewrite GitBook image references during version sync by copying referenced assets beside each synced doc and converting `img` sources to MDX imports before versioning.
+
 ## 0.1.9
 
 ### Patch Changes
