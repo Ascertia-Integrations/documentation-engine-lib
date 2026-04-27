@@ -1,6 +1,6 @@
 {
   "name": "@ascertia-integrations/docusaurus-version-sync",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Sync X.Y.Z git branches into Docusaurus versioned docs.",
   "license": "UNLICENSED",
   "type": "commonjs",
