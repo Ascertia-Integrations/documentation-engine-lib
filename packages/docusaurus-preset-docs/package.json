@@ -1,6 +1,6 @@
 {
   "name": "@ascertia-integrations/docusaurus-preset-docs",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Shared Docusaurus preset for product documentation sites.",
   "license": "UNLICENSED",
   "type": "commonjs",
